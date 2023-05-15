@@ -1,2 +1,6 @@
-https://github.com/zc2638/go-standard
-https://github.com/fufuok/utils
+
+### 参考项目
+
+- [eagle](https://github.com/go-eagle/eagle)
+- [go-standard](https://github.com/zc2638/go-standard)
+- [fufuok/utils](https://github.com/fufuok/utils)

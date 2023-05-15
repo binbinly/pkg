@@ -34,7 +34,9 @@ func NewBasicClient(addr, pwd string) (*redis.Client, error) {
 	}
 
 	log.Println("init redis success by addr:", addr)
-	Client = rdb
+	if Client == nil {
+		Client = rdb
+	}
 	return rdb, nil
 }
 
@@ -65,7 +67,9 @@ func NewClient(c *Config) (*redis.Client, error) {
 		}
 	}
 	log.Println("init redis success by addr:", c.Addr)
-	Client = rdb
+	if Client == nil {
+		Client = rdb
+	}
 	return rdb, nil
 }
 
