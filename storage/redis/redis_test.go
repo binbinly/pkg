@@ -7,11 +7,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
+var Client *redis.Client
+
 func TestMain(m *testing.M) {
-	InitTestRedis()
+	Client = InitTestRedis()
 	if code := m.Run(); code != 0 {
 		panic(code)
 	}

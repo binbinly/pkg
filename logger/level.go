@@ -25,43 +25,43 @@ func getZapLevel(l string) zapcore.Level {
 }
 
 func Debug(args ...interface{}) {
-	logger.Log(zapcore.DebugLevel, args...)
+	logger.Log("debug", args...)
 }
 
 func Debugf(format string, args ...interface{}) {
-	logger.Logf(zapcore.DebugLevel, format, args...)
+	logger.Logf("debug", format, args...)
 }
 
 func Info(args ...interface{}) {
-	logger.Log(zapcore.InfoLevel, args...)
+	logger.Log("info", args...)
 }
 
 func Infof(format string, args ...interface{}) {
-	logger.Logf(zapcore.InfoLevel, format, args...)
+	logger.Logf("info", format, args...)
 }
 
 func Warn(args ...interface{}) {
-	logger.Log(zapcore.WarnLevel, args...)
+	logger.Log("warn", args...)
 }
 
 func Warnf(format string, args ...interface{}) {
-	logger.Logf(zapcore.WarnLevel, format, args...)
+	logger.Logf("warn", format, args...)
 }
 
 func Error(args ...interface{}) {
-	logger.Log(zapcore.ErrorLevel, args...)
+	logger.Log("error", args...)
 }
 
 func Errorf(format string, args ...interface{}) {
-	logger.Logf(zapcore.ErrorLevel, format, args...)
+	logger.Logf("error", format, args...)
 }
 
 func Fatal(args ...interface{}) {
-	logger.Log(zapcore.FatalLevel, args...)
+	logger.Log("fatal", args...)
 	os.Exit(1)
 }
 
 func Fatalf(format string, args ...interface{}) {
-	logger.Logf(zapcore.FatalLevel, format, args...)
+	logger.Logf("fatal", format, args...)
 	os.Exit(1)
 }

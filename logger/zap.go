@@ -100,16 +100,12 @@ func (l *zapLogger) Fields(fields map[string]any) Logger {
 	return zl
 }
 
-func (l *zapLogger) Error(err error) Logger {
-	return l.Fields(map[string]any{"error": err})
+func (l *zapLogger) Log(level string, v ...any) {
+	l.zap.Log(getZapLevel(level), fmt.Sprint(v...))
 }
 
-func (l *zapLogger) Log(level zapcore.Level, args ...any) {
-	l.zap.Log(level, fmt.Sprint(args...))
-}
-
-func (l *zapLogger) Logf(level zapcore.Level, format string, args ...any) {
-	l.zap.Log(level, fmt.Sprintf(format, args...))
+func (l *zapLogger) Logf(level string, format string, v ...any) {
+	l.zap.Log(getZapLevel(level), fmt.Sprintf(format, v...))
 }
 
 func (l *zapLogger) filesizeRotation(file string) io.Writer {

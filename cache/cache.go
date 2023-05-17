@@ -41,3 +41,15 @@ func BuildCacheKey(prefix string, key string) (cacheKey string) {
 	}
 	return
 }
+
+func Error(err error) *errno.Error {
+	if errors.Is(err, service.ErrApplyExisted) {
+		return ecode.ErrApplyRepeatFailed
+	} else if errors.Is(err, service.ErrApplyNotFound) {
+		return ecode.ErrApplyNotFoundFailed
+	} else if err != nil {
+		logger.Warnf("[api] err: %v", err)
+		return errno.ErrInternalServer
+	}
+	return nil
+}

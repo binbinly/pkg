@@ -17,8 +17,8 @@ type Manager struct {
 	clients map[string]*redis.Client
 }
 
-// InitClient init a redis client
-func (m *Manager) InitClient(name string, c *Config) {
+// NewClient new a redis client
+func (m *Manager) NewClient(name string, c *Config) {
 	if name == "" {
 		name = "default"
 	}

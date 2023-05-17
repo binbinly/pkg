@@ -5,15 +5,22 @@ import (
 	"testing"
 	"time"
 
+	redis2 "github.com/binbinly/pkg/storage/redis"
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/binbinly/pkg/storage/redis"
 )
 
-func TestLockWithDefaultTimeout(t *testing.T) {
-	redis.InitTestRedis()
+var Client *redis.Client
 
-	lock := NewRedisLock(redis.Client, "lock1", WithTTL(2*time.Second))
+func TestMain(m *testing.M) {
+	Client = redis2.InitTestRedis()
+	if code := m.Run(); code != 0 {
+		panic(code)
+	}
+}
+
+func TestLockWithDefaultTimeout(t *testing.T) {
+	lock := NewRedisLock(Client, "lock1", WithTTL(2*time.Second))
 	ok, err := lock.Lock(context.Background())
 	assert.Nil(t, err)
 	assert.True(t, ok)
@@ -24,11 +31,9 @@ func TestLockWithDefaultTimeout(t *testing.T) {
 }
 
 func TestLockWithTimeout(t *testing.T) {
-	redis.InitTestRedis()
-
 	t.Run("should lock/unlock success", func(t *testing.T) {
 		ctx := context.Background()
-		lock1 := NewRedisLock(redis.Client, "lock2", WithTTL(2*time.Second))
+		lock1 := NewRedisLock(Client, "lock2", WithTTL(2*time.Second))
 		ok, err := lock1.Lock(ctx)
 		assert.Nil(t, err)
 		assert.True(t, ok)
@@ -40,7 +45,7 @@ func TestLockWithTimeout(t *testing.T) {
 
 	t.Run("should unlock failed", func(t *testing.T) {
 		ctx := context.Background()
-		lock2 := NewRedisLock(redis.Client, "lock3", WithTTL(2*time.Second))
+		lock2 := NewRedisLock(Client, "lock3", WithTTL(2*time.Second))
 		ok, err := lock2.Lock(ctx)
 		assert.Nil(t, err)
 		assert.True(t, ok)

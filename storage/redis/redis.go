@@ -2,22 +2,11 @@ package redis
 
 import (
 	"context"
-
 	"log"
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
-)
-
-// Client redis 客户端
-var Client *redis.Client
-
-const (
-	// Nil redis nil
-	Nil = redis.Nil
-	// Success redis成功标识
-	Success = 1
 )
 
 // NewBasicClient new a redis instance
@@ -34,9 +23,6 @@ func NewBasicClient(addr, pwd string) (*redis.Client, error) {
 	}
 
 	log.Println("init redis success by addr:", addr)
-	if Client == nil {
-		Client = rdb
-	}
 	return rdb, nil
 }
 
@@ -67,14 +53,11 @@ func NewClient(c *Config) (*redis.Client, error) {
 		}
 	}
 	log.Println("init redis success by addr:", c.Addr)
-	if Client == nil {
-		Client = rdb
-	}
 	return rdb, nil
 }
 
 // InitTestRedis 实例化一个可以用于单元测试的redis
-func InitTestRedis() {
+func InitTestRedis() *redis.Client {
 	mr, err := miniredis.Run()
 	if err != nil {
 		panic(err)
@@ -82,8 +65,9 @@ func InitTestRedis() {
 	// 打开下面命令可以测试链接关闭的情况
 	// defer mr.Close()
 
-	Client = redis.NewClient(&redis.Options{
+	rdb := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
 	log.Println("mini redis addr:", mr.Addr())
+	return rdb
 }
