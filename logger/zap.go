@@ -73,6 +73,8 @@ func (l *zapLogger) Init(opts ...Option) error {
 		zapcore.NewTee(cores...),
 		zap.AddCaller(),
 		zap.AddCallerSkip(l.opts.CallerSkipCount),
+		// 堆栈信息
+		zap.AddStacktrace(zapcore.ErrorLevel),
 		zap.ErrorOutput(stderr),
 	)
 
