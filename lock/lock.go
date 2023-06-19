@@ -23,7 +23,3 @@ func genToken() string {
 	u, _ := uuid.NewRandom()
 	return u.String()
 }
-
-func buildKey(prefix, key string) string {
-	return prefix + key
-}

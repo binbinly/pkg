@@ -29,8 +29,8 @@ func Port(lis net.Listener) (int, bool) {
 	return 0, false
 }
 
-// GetHostname 获取主机名
-func GetHostname() string {
+// Hostname 获取主机名
+func Hostname() string {
 	name, err := os.Hostname()
 	if err != nil {
 		name = "unknown"

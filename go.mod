@@ -4,12 +4,18 @@ go 1.20
 
 require (
 	github.com/alicebob/miniredis/v2 v2.30.2
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.1.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/extra/redisotel/v9 v9.0.4
 	github.com/redis/go-redis/v9 v9.0.4
+	github.com/rs/xid v1.5.0
 	github.com/stretchr/testify v1.8.2
+	github.com/zhenjl/cityhash v0.0.0-20131128155616-cdd6a94144ab
 	go.uber.org/zap v1.24.0
+	golang.org/x/crypto v0.9.0
+	golang.org/x/sync v0.2.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/mysql v1.5.0
 	gorm.io/gorm v1.25.1
@@ -35,7 +41,6 @@ require (
 	go.opentelemetry.io/otel/trace v1.15.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

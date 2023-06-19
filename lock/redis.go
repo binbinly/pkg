@@ -2,6 +2,7 @@ package lock
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -45,7 +46,7 @@ func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *RedisLock {
 	for _, f := range opts {
 		f(opt)
 	}
-	opt.key = buildKey(opt.prefix, key)
+	opt.key = strings.Join([]string{opt.prefix, key}, ":")
 	return opt
 }
 

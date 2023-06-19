@@ -9,6 +9,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+const (
+	// Nil redis nil
+	Nil = redis.Nil
+	// Success redis成功标识
+	Success = 1
+)
+
 // NewBasicClient new a redis instance
 func NewBasicClient(addr, pwd string) (*redis.Client, error) {
 	rdb := redis.NewClient(&redis.Options{
@@ -52,6 +59,7 @@ func NewClient(c *Config) (*redis.Client, error) {
 			return nil, err
 		}
 	}
+
 	log.Println("init redis success by addr:", c.Addr)
 	return rdb, nil
 }
@@ -68,6 +76,7 @@ func InitTestRedis() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
+	
 	log.Println("mini redis addr:", mr.Addr())
 	return rdb
 }

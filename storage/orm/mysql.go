@@ -14,18 +14,18 @@ import (
 )
 
 // NewBasicMySQL 创建一个简单的mysql连接
-func NewBasicMySQL(host, user, pwd, name string) *gorm.DB {
+func NewBasicMySQL(host, user, pwd, database string) *gorm.DB {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
 		user,
 		pwd,
 		host,
-		name,
+		database,
 		true,
 		"Local")
 
 	db, err := gorm.Open(mysql.Open(dsn))
 	if err != nil {
-		log.Panicf("open mysql failed. database name: %s, err: %+v", name, err)
+		log.Panicf("open mysql failed. database name: %s, err: %+v", database, err)
 	}
 
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
@@ -36,16 +36,16 @@ func NewBasicMySQL(host, user, pwd, name string) *gorm.DB {
 // NewMySQL 链接数据库，生成数据库实例
 func NewMySQL(c *Config) (db *gorm.DB) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
-		c.UserName,
+		c.User,
 		c.Password,
 		c.Addr,
-		c.Name,
+		c.Database,
 		true,
 		"Local")
 
 	sqlDB, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Panicf("open mysql failed. database name: %s, err: %+v", c.Name, err)
+		log.Panicf("open mysql failed. database name: %s, err: %+v", c.Database, err)
 	}
 	// set for db connection
 	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
@@ -57,13 +57,13 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 
 	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), gormConfig(c))
 	if err != nil {
-		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
+		log.Panicf("database connection failed. database name: %s, err: %+v", c.Database, err)
 	}
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
 	if c.Trace { //链路追踪
 		if err = db.Use(tracing.NewPlugin(tracing.WithoutMetrics())); err != nil {
-			log.Panicf("use tracing failed. database name: %s, err: %+v", c.Name, err)
+			log.Panicf("use tracing failed. database name: %s, err: %+v", c.Database, err)
 		}
 	}
 	return db
