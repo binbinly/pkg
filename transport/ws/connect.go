@@ -105,7 +105,10 @@ func (c *wsConnection) startWriter() {
 // startReader 读消息Goroutine，用于从客户端中读取数据
 func (c *wsConnection) startReader() {
 	logger.Debug("[ws.read] Reader Goroutine is running")
-	defer c.Stop()
+	defer func() {
+		logger.Debugf("[ws.read] %v conn Reader exit!", c.RemoteAddr().String())
+		c.Stop()
+	}()
 
 	c.conn.SetReadLimit(int64(c.server.Options().MaxPacketSize))
 	_ = c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -160,10 +163,6 @@ func (c *wsConnection) Start() {
 
 // Stop 关闭连接
 func (c *wsConnection) Stop() {
-	//如果用户注册了该连接的关闭回调业务，那么在此调用
-	if c.server.Options().OnConnStop != nil {
-		c.server.Options().OnConnStop(c)
-	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -172,13 +171,18 @@ func (c *wsConnection) Stop() {
 		return
 	}
 
+	//如果用户注册了该连接的关闭回调业务，那么在此调用
+	if c.server.Options().OnConnStop != nil {
+		c.server.Options().OnConnStop(c)
+	}
+
 	//关闭socket连接
 	if err := c.conn.Close(); err != nil {
 		logger.Warnf("[ws.stop] connection closed err:%v", err)
 	}
+
 	//关闭Writer
 	c.cancel()
-
 	// 将连接从连接管理器中删除
 	c.server.GetManager(c.id).Remove(c)
 	// 关闭该连接全部管道

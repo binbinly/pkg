@@ -98,15 +98,19 @@ func (s *wsServer) Start(ctx context.Context) error {
 // Stop 关闭服务器
 func (s *wsServer) Stop(ctx context.Context) error {
 	log.Print("[Websocket] server is stopping")
+
+	// 先关闭监听新连接，再关闭当前所有连接
+	err := s.lis.Close()
 	for _, manager := range s.managers {
 		manager.Clear()
 	}
-	return s.lis.Close()
+
+	return err
 }
 
 // Listen websocket连接监听
 func (s *wsServer) Listen() error {
-	var cid uint64
+	var cid uint64 = 1
 	lis, err := net.Listen("tcp", s.opts.Addr)
 	if err != nil {
 		return err

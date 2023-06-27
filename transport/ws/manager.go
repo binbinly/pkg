@@ -52,12 +52,9 @@ func (c *Manager) Len() int {
 
 // Clear 清除并停止所有连接
 func (c *Manager) Clear() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	for cid, conn := range c.connections {
-		go conn.Stop()
-		delete(c.connections, cid)
+	// 这里不需要单独调用删除连接，也不可以加锁，conn.Stop()里处理了，否则会死锁
+	for _, conn := range c.connections {
+		conn.Stop()
 	}
 }
 
