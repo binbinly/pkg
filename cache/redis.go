@@ -6,11 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
-	"github.com/redis/go-redis/v9"
-
 	"github.com/binbinly/pkg/codec"
 	"github.com/binbinly/pkg/logger"
+	"github.com/pkg/errors"
+	"github.com/redis/go-redis/v9"
 )
 
 type redisCache struct {

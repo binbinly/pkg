@@ -3,7 +3,7 @@ package logger
 var _defOptions = Options{
 	JsonEncoding:    true,
 	CallerSkipCount: 2,
-	LogDir:          "./logs/",
+	Level:           DebugLevel,
 	Rotation: Rotation{
 		MaxSize:    256,
 		MaxBackups: 300,

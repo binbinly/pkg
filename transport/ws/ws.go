@@ -3,16 +3,17 @@ package ws
 import (
 	"context"
 	"errors"
-	"github.com/binbinly/pkg/logger"
-	"github.com/binbinly/pkg/util"
-	"github.com/gorilla/websocket"
-	"github.com/rs/xid"
-	"github.com/zhenjl/cityhash"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/binbinly/pkg/logger"
+	"github.com/binbinly/pkg/util"
+	"github.com/gorilla/websocket"
+	"github.com/rs/xid"
+	"github.com/zhenjl/cityhash"
 )
 
 var (

@@ -61,11 +61,15 @@ func (l *zapLogger) Init(opts ...Option) error {
 		}
 		infoFile := zapcore.AddSync(l.filesizeRotation(l.opts.LogDir + "info.log"))
 		warnFile := zapcore.AddSync(l.filesizeRotation(l.opts.LogDir + "warn.log"))
-		fileCore := zapcore.NewCore(
-			encoder, zapcore.NewMultiWriteSyncer(infoFile, warnFile),
+		infoCore := zapcore.NewCore(
+			encoder, zapcore.NewMultiWriteSyncer(infoFile),
 			infoEnabler,
 		)
-		cores = append(cores, fileCore)
+		warnCore := zapcore.NewCore(
+			encoder, zapcore.NewMultiWriteSyncer(warnFile),
+			warnEnabler,
+		)
+		cores = append(cores, infoCore, warnCore)
 	}
 
 	// 构造日志
