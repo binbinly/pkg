@@ -58,7 +58,7 @@ func WithJsonEncoding() Option {
 	}
 }
 
-func WithFields(fields map[string]interface{}) Option {
+func WithFields(fields map[string]any) Option {
 	return func(args *Options) {
 		args.Fields = fields
 	}

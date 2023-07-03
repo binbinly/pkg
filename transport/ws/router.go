@@ -44,7 +44,7 @@ func NewEngine() *Engine {
 		tree: make(map[string]HandlerChain),
 	}
 	engine.RouterGroup.engine = engine
-	engine.pool.New = func() interface{} {
+	engine.pool.New = func() any {
 		return engine.allocateContext()
 	}
 	return engine
@@ -92,7 +92,7 @@ func (c *Context) Deadline() (deadline time.Time, ok bool) {
 // Value returns the value associated with this context for key, or nil
 // if no value is associated with key. Successive calls to Value with
 // the same key returns the same result.
-func (c *Context) Value(interface{}) interface{} {
+func (c *Context) Value(any) any {
 	return c.Req
 }
 

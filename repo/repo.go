@@ -15,9 +15,6 @@ import (
 
 var g singleflight.Group
 
-// ErrRecordNotModified 记录未修改
-var ErrRecordNotModified = errors.New("record not modified")
-
 // Repo struct
 type Repo struct {
 	DB    *gorm.DB

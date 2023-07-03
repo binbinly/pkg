@@ -33,44 +33,44 @@ func getZapLevel(l string) zapcore.Level {
 	return level
 }
 
-func Debug(args ...interface{}) {
+func Debug(args ...any) {
 	logger.Log(DebugLevel, args...)
 }
 
-func Debugf(format string, args ...interface{}) {
+func Debugf(format string, args ...any) {
 	logger.Logf(DebugLevel, format, args...)
 }
 
-func Info(args ...interface{}) {
+func Info(args ...any) {
 	logger.Log(InfoLevel, args...)
 }
 
-func Infof(format string, args ...interface{}) {
+func Infof(format string, args ...any) {
 	logger.Logf(InfoLevel, format, args...)
 }
 
-func Warn(args ...interface{}) {
+func Warn(args ...any) {
 	logger.Log(WarnLevel, args...)
 }
 
-func Warnf(format string, args ...interface{}) {
+func Warnf(format string, args ...any) {
 	logger.Logf(WarnLevel, format, args...)
 }
 
-func Error(args ...interface{}) {
+func Error(args ...any) {
 	logger.Log(ErrorLevel, args...)
 }
 
-func Errorf(format string, args ...interface{}) {
+func Errorf(format string, args ...any) {
 	logger.Logf(ErrorLevel, format, args...)
 }
 
-func Fatal(args ...interface{}) {
+func Fatal(args ...any) {
 	logger.Log(FatalLevel, args...)
 	os.Exit(1)
 }
 
-func Fatalf(format string, args ...interface{}) {
+func Fatalf(format string, args ...any) {
 	logger.Logf(FatalLevel, format, args...)
 	os.Exit(1)
 }

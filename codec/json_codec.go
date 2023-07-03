@@ -12,12 +12,12 @@ import (
 type JSONEncoding struct{}
 
 // Marshal json encode
-func (j JSONEncoding) Marshal(v interface{}) ([]byte, error) {
+func (j JSONEncoding) Marshal(v any) ([]byte, error) {
 	return json.Marshal(v)
 }
 
 // Unmarshal json decode
-func (j JSONEncoding) Unmarshal(data []byte, value interface{}) error {
+func (j JSONEncoding) Unmarshal(data []byte, value any) error {
 	return json.Unmarshal(data, value)
 }
 
@@ -25,7 +25,7 @@ func (j JSONEncoding) Unmarshal(data []byte, value interface{}) error {
 type JSONGzipEncoding struct{}
 
 // Marshal json encode and gzip
-func (jz JSONGzipEncoding) Marshal(v interface{}) ([]byte, error) {
+func (jz JSONGzipEncoding) Marshal(v any) ([]byte, error) {
 	buf, err := json.Marshal(v)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (jz JSONGzipEncoding) Marshal(v interface{}) ([]byte, error) {
 }
 
 // Unmarshal json encode and gzip
-func (jz JSONGzipEncoding) Unmarshal(data []byte, value interface{}) error {
+func (jz JSONGzipEncoding) Unmarshal(data []byte, value any) error {
 	jsonData, err := GzipDecode(data)
 	if err != nil {
 		return err
