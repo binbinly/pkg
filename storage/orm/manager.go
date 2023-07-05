@@ -31,7 +31,7 @@ func (m *Manager) InitClient(name string, c *Config) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	m.clients[name] = NewMySQL(c)
+	m.clients[name] = NewDB(c)
 }
 
 // GetClient get a redis client

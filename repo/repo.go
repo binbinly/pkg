@@ -56,7 +56,14 @@ func (r *Repo) QueryCache(ctx context.Context, key string, data any, ttl time.Du
 
 			reflectValue = reflectValue.Elem()
 		}
-		logger.Infof("[repo] key %v is empty", key)
+		switch reflectValue.Kind() {
+		case reflect.Slice, reflect.Array:
+			if reflectValue.Len() == 0 && reflectValue.Cap() == 0 {
+				// if the slice cap is externally initialized, the externally initialized slice is directly used here
+				reflectValue.Set(reflect.MakeSlice(reflectValue.Type(), 0, 20))
+			}
+		}
+		logger.Debugf("[repo] key %v is empty", key)
 		return nil
 	} else if err != nil && err != redis.Nil {
 		return errors.Wrapf(err, "[repo] get cache by key: %s", key)
@@ -64,7 +71,7 @@ func (r *Repo) QueryCache(ctx context.Context, key string, data any, ttl time.Du
 
 	// 检查缓存取出的数据是否为空，不为空说明已经从缓存中取到了数据，直接返回
 	if elem := reflect.ValueOf(data).Elem(); !elem.IsNil() {
-		logger.Infof("[repo] get from obj cache, key: %v, kind:%v", key, elem.Kind())
+		logger.Debugf("[repo] get from obj cache, key: %v, kind:%v", key, elem.Kind())
 		return
 	}
 

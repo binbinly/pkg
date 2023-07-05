@@ -4,7 +4,9 @@ import "time"
 
 // Config redis config
 type Config struct {
+	Url          string
 	Addr         string
+	Username     string
 	Password     string
 	DB           int
 	MinIdleConn  int

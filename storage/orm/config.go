@@ -4,7 +4,10 @@ import "time"
 
 // Config mysql config
 type Config struct {
-	Addr            string
+	Driver          string
+	Dsn             string
+	Host            string
+	Port            int
 	User            string
 	Password        string
 	Database        string

@@ -16,46 +16,36 @@ const (
 	Success = 1
 )
 
-// NewBasicClient new a redis instance
-func NewBasicClient(addr, pwd string) (*redis.Client, error) {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: pwd,
-		DB:       0,
-	})
-
-	// check redis if is ok
-	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
-		return nil, err
-	}
-
-	log.Println("init redis success by addr:", addr)
-	return rdb, nil
-}
-
 // NewClient new a redis instance
-func NewClient(c *Config) (*redis.Client, error) {
-	// create a redis client
-	rdb := redis.NewClient(&redis.Options{
-		Addr:         c.Addr,
-		Password:     c.Password,
-		DB:           c.DB,
-		MinIdleConns: c.MinIdleConn,
-		DialTimeout:  c.DialTimeout,
-		ReadTimeout:  c.ReadTimeout,
-		WriteTimeout: c.WriteTimeout,
-		PoolSize:     c.PoolSize,
-		PoolTimeout:  c.PoolTimeout,
-	})
-
+func NewClient(c *Config) (rdb *redis.Client, err error) {
+	if c.Url != "" {
+		opt, err := redis.ParseURL(c.Url)
+		if err != nil {
+			return nil, err
+		}
+		rdb = redis.NewClient(opt)
+	} else {
+		rdb = redis.NewClient(&redis.Options{
+			Addr:         c.Addr,
+			Username:     c.Username,
+			Password:     c.Password,
+			DB:           c.DB,
+			MinIdleConns: c.MinIdleConn,
+			DialTimeout:  c.DialTimeout,
+			ReadTimeout:  c.ReadTimeout,
+			WriteTimeout: c.WriteTimeout,
+			PoolSize:     c.PoolSize,
+			PoolTimeout:  c.PoolTimeout,
+		})
+	}
 	// check redis if is ok
-	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
+	if _, err = rdb.Ping(context.Background()).Result(); err != nil {
 		return nil, err
 	}
 
 	// hook tracing (using open telemetry)
 	if c.Trace {
-		if err := redisotel.InstrumentTracing(rdb); err != nil {
+		if err = redisotel.InstrumentTracing(rdb); err != nil {
 			return nil, err
 		}
 	}
@@ -76,7 +66,7 @@ func InitTestRedis() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	
+
 	log.Println("mini redis addr:", mr.Addr())
 	return rdb
 }

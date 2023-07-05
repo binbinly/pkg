@@ -50,8 +50,8 @@ func (m *Manager) GetClient(name string) *redis.Client {
 	return nil
 }
 
-// NewRManager create a redis manager
-func NewRManager() *Manager {
+// NewManager create a redis manager
+func NewManager() *Manager {
 	m := &Manager{
 		clients: make(map[string]*redis.Client),
 	}
