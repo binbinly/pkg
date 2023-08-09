@@ -67,7 +67,7 @@ func gormConfig(c *Config) *gorm.Config {
 	conf := &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true, //禁用自动创建数据库外键约束
 		PrepareStmt:                              true, //PreparedStmt 在执行任何 SQL 时都会创建一个 prepared statement 并将其缓存，以提高后续的效率
-		Logger:                                   logger.Default.LogMode(logger.Info),
+		Logger:                                   logger.Default.LogMode(logger.Warn),
 	}
 	if c.TablePrefix != "" {
 		conf.NamingStrategy = schema.NamingStrategy{

@@ -40,8 +40,8 @@ func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *RedisLock {
 	opt := &RedisLock{
 		rdb:    rdb,
 		token:  genToken(),
-		prefix: _defaultPrefix,
-		ttl:    _defaultTTL,
+		prefix: _prefix,
+		ttl:    _ttl,
 	}
 	for _, f := range opts {
 		f(opt)

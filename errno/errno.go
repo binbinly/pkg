@@ -19,9 +19,9 @@ var _toStatus = map[int]int{
 
 // Error 返回错误码和消息的结构体
 type Error struct {
-	code    int      `json:"code"`
-	msg     string   `json:"msg"`
-	details []string `json:"details"`
+	code    int
+	msg     string
+	details []string
 }
 
 // NewError 实例化
@@ -77,8 +77,8 @@ type Err struct {
 }
 
 // Error 格式化
-func (err *Err) Error() string {
-	return fmt.Sprintf("Err - code: %d, message: %s, error: %s", err.Code, err.Message, err.Err)
+func (e *Err) Error() string {
+	return fmt.Sprintf("Err - code: %d, message: %s, error: %s", e.Code, e.Message, e.Err)
 }
 
 // DecodeErr 对错误进行解码，返回错误code和错误提示

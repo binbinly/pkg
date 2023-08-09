@@ -59,8 +59,8 @@ func (l *zapLogger) Init(opts ...Option) error {
 		if err := os.MkdirAll(l.opts.LogDir, 0766); err != nil {
 			return err
 		}
-		infoFile := zapcore.AddSync(l.filesizeRotation(l.opts.LogDir + "info.log"))
-		warnFile := zapcore.AddSync(l.filesizeRotation(l.opts.LogDir + "warn.log"))
+		infoFile := zapcore.AddSync(l.fileSizeRotation(l.opts.LogDir + "info.log"))
+		warnFile := zapcore.AddSync(l.fileSizeRotation(l.opts.LogDir + "warn.log"))
 		infoCore := zapcore.NewCore(
 			encoder, zapcore.NewMultiWriteSyncer(infoFile),
 			infoEnabler,
@@ -77,8 +77,7 @@ func (l *zapLogger) Init(opts ...Option) error {
 		zapcore.NewTee(cores...),
 		zap.AddCaller(),
 		zap.AddCallerSkip(l.opts.CallerSkipCount),
-		// 堆栈信息
-		zap.AddStacktrace(zapcore.ErrorLevel),
+		zap.AddStacktrace(zapcore.ErrorLevel), // 记录当前日志级别的堆栈信息
 		zap.ErrorOutput(stderr),
 	)
 
@@ -114,7 +113,7 @@ func (l *zapLogger) Logf(level string, format string, v ...any) {
 	l.zap.Log(getZapLevel(level), fmt.Sprintf(format, v...))
 }
 
-func (l *zapLogger) filesizeRotation(file string) io.Writer {
+func (l *zapLogger) fileSizeRotation(file string) io.Writer {
 	return &lumberjack.Logger{
 		Filename:   file,
 		MaxSize:    l.opts.Rotation.MaxSize,

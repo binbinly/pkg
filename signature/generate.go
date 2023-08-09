@@ -28,7 +28,7 @@ func (s *signature) Generate(params url.Values) (authorization, date string, err
 
 	// 对数据进行 sha256 加密，并进行 base64 encode
 	hash := hmac.New(sha256.New, []byte(s.secret))
-	if _, err := hash.Write(buffer.Bytes()); err != nil {
+	if _, err = hash.Write(buffer.Bytes()); err != nil {
 		return "", "", err
 	}
 	digest := base64.StdEncoding.EncodeToString(hash.Sum(nil))

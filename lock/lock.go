@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	_defaultPrefix = "lock:"
-	_defaultTTL    = 30 * time.Second
+const (
+	_prefix = "lock:"
+	_ttl    = 30 * time.Second
 )
 
 // Lock define common func
