@@ -9,32 +9,45 @@ import (
 const (
 	key    = "sign"
 	secret = "i1ydX9RtHyuJTrw7frcu"
-	ttl    = time.Minute * 10
+	method = "POST"
+	path   = "/echo"
+	ttl    = time.Minute * 5
 )
 
-func TestSignature_Generate(t *testing.T) {
+func TestSignature(t *testing.T) {
 	params := url.Values{}
 	params.Add("a", "a1")
 	params.Add("d", "d1")
 	params.Add("c", "c1 c2")
+	params.Add("method", method)
+	params.Add("path", path)
 
-	authorization, date, err := New(key, secret, ttl).Generate(params)
+	sign := New(key, secret, ttl)
+	authorization, date, err := sign.Generate(params)
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Log("authorization:", authorization)
 	t.Log("date:", date)
-	t.Log("err:", err)
+	ok, err := sign.Verify(authorization, date, params)
+	t.Log(ok)
 }
 
-func TestSignature_Verify(t *testing.T) {
-
-	authorization := "sign S4Pwr9Fd08hR4Po+Fy2jdf9aYN1vl2XGwLtPHSNbdx4="
-	date := "2023-05-09 15:40:23"
-
+func TestSignatureSha256(t *testing.T) {
 	params := url.Values{}
 	params.Add("a", "a1")
 	params.Add("d", "d1")
 	params.Add("c", "c1 c2")
+	params.Add("method", method)
+	params.Add("path", path)
 
-	ok, err := New(key, secret, ttl).Verify(authorization, date, params)
+	sign := NewSha256(key, secret, ttl)
+	authorization, date, err := sign.Generate(params)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("authorization:", authorization)
+	t.Log("date:", date)
+	ok, err := sign.Verify(authorization, date, params)
 	t.Log(ok)
-	t.Log(err)
 }
