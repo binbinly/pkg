@@ -1,21 +1,29 @@
 package util
 
 import (
+	"encoding/json"
+	"fmt"
 	"sort"
+	"strings"
 )
 
-// MapSortString 对 map 进行排序
-func MapSortString(m map[string]any) map[string]any {
+// MapBuildQuery map => url query
+func MapBuildQuery(m map[string]any) string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 
-	ret := make(map[string]any, len(m))
+	var params []string
 	for _, k := range keys {
-		ret[k] = m[k]
+		switch v := m[k].(type) {
+		case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64, bool, string:
+			params = append(params, fmt.Sprintf("%s=%v", k, v))
+		default:
+			j, _ := json.Marshal(v)
+			params = append(params, fmt.Sprintf("%s=%v", k, string(j)))
+		}
 	}
-
-	return ret
+	return strings.Join(params, "&")
 }

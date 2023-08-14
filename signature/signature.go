@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
-	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/binbinly/pkg/util"
@@ -85,23 +83,10 @@ func (s *signature) data(timestamp int64, params any) ([]byte, error) {
 		}
 		buffer.WriteString(sortParamsEncode)
 	case map[string]any:
-		sortParams := util.MapSortString(p)
-		sortParamsEncode := s.joinParamsStr(sortParams)
-		buffer.WriteString(sortParamsEncode)
+		buffer.WriteString(util.MapBuildQuery(p))
 	case string:
 		buffer.WriteString(p)
 	}
 
 	return buffer.Bytes(), nil
-}
-
-func (s *signature) joinParamsStr(m map[string]any) string {
-	if len(m) == 0 {
-		return ""
-	}
-	var params []string
-	for k, v := range m {
-		params = append(params, fmt.Sprintf("%s=%v", k, v))
-	}
-	return strings.Join(params, "&")
 }
