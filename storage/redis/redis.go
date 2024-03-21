@@ -14,6 +14,8 @@ const (
 	Nil = redis.Nil
 	// Success redis成功标识
 	Success = 1
+	// DefaultDB default redis name
+	DefaultDB = "default"
 )
 
 // NewClient new a redis instance

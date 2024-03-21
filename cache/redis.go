@@ -3,10 +3,8 @@ package cache
 import (
 	"context"
 	"reflect"
-	"strings"
 	"time"
 
-	"github.com/binbinly/pkg/codec"
 	"github.com/binbinly/pkg/logger"
 	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
@@ -14,9 +12,7 @@ import (
 
 type redisCache struct {
 	client *redis.Client
-	codec  codec.Encoding
-	expire time.Duration
-	prefix string
+	opts   Options
 }
 
 // NewRedisCache new redis cache
@@ -24,21 +20,19 @@ func NewRedisCache(client *redis.Client, opts ...Option) Cache {
 	o := NewOptions(opts...)
 	return &redisCache{
 		client: client,
-		prefix: o.prefix,
-		codec:  o.codec,
-		expire: o.expire,
+		opts:   o,
 	}
 }
 
 // Set cache
 func (c *redisCache) Set(ctx context.Context, key string, val any, expiration time.Duration) error {
-	buf, err := c.codec.Marshal(val)
+	buf, err := c.opts.codec.Marshal(val)
 	if err != nil {
 		return errors.Wrapf(err, "[cache] marshal data err, value is %+v", val)
 	}
 
 	if expiration == 0 {
-		expiration = c.expire
+		expiration = c.opts.expire
 	}
 
 	if err = c.client.Set(ctx, c.buildKey(key), buf, expiration).Err(); err != nil {
@@ -63,7 +57,7 @@ func (c *redisCache) Get(ctx context.Context, key string, val any) error {
 		return ErrPlaceholder
 	}
 
-	if err = c.codec.Unmarshal(data, val); err != nil {
+	if err = c.opts.codec.Unmarshal(data, val); err != nil {
 		return errors.Wrapf(err, "[cache] unmarshal data error, key=%s, cacheKey=%s type=%v, data=%+v ",
 			key, cacheKey, reflect.TypeOf(val), string(data))
 	}
@@ -76,12 +70,12 @@ func (c *redisCache) MultiSet(ctx context.Context, m map[string]any, expiration 
 		return nil
 	}
 	if expiration == 0 {
-		expiration = c.expire
+		expiration = c.opts.expire
 	}
 	// key-value是成对的，所以这里的容量是map的2倍
 	paris := make([]any, 0, 2*len(m))
 	for key, value := range m {
-		buf, err := c.codec.Marshal(value)
+		buf, err := c.opts.codec.Marshal(value)
 		if err != nil {
 			continue
 		}
@@ -133,7 +127,7 @@ func (c *redisCache) MultiGet(ctx context.Context, keys []string, value any, obj
 			continue
 		}
 
-		if err = c.codec.Unmarshal([]byte(val.(string)), &object); err != nil {
+		if err = c.opts.codec.Unmarshal([]byte(val.(string)), &object); err != nil {
 			logger.Warnf("[cache] unmarshal data error: %+v, key=%s, type=%v val=%v", err,
 				keys[i], reflect.TypeOf(val), val)
 			continue
@@ -167,5 +161,6 @@ func (c *redisCache) SetCacheWithNotFound(ctx context.Context, key string) error
 }
 
 func (c *redisCache) buildKey(key string) string {
-	return strings.Join([]string{c.prefix, key}, ":")
+	cacheKey, _ := BuildCacheKey(c.opts.prefix, key)
+	return cacheKey
 }

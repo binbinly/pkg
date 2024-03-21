@@ -8,7 +8,13 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/binbinly/pkg/transport"
 	"github.com/binbinly/pkg/util"
+)
+
+var (
+	_ transport.Server   = (*Server)(nil)
+	_ transport.Endpoint = (*Server)(nil)
 )
 
 // Server http server struct

@@ -17,27 +17,12 @@ var g singleflight.Group
 
 // Repo struct
 type Repo struct {
-	DB    *gorm.DB
 	Cache cache.Cache
-}
-
-// GetDB 获取 gorm.DB
-func (r *Repo) GetDB() *gorm.DB {
-	return r.DB
 }
 
 // GetCache 获取 cache
 func (r *Repo) GetCache() cache.Cache {
 	return r.Cache
-}
-
-// Close mysql connection
-func (r *Repo) Close() error {
-	db, err := r.DB.DB()
-	if err != nil {
-		return nil
-	}
-	return db.Close()
 }
 
 // QueryCache 查询启用缓存

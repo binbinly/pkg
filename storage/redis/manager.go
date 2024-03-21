@@ -20,7 +20,7 @@ type Manager struct {
 // NewClient new a redis client
 func (m *Manager) NewClient(name string, c *Config) {
 	if name == "" {
-		name = "default"
+		name = DefaultDB
 	}
 	m.mu.RLock()
 	if _, ok := m.clients[name]; ok {
