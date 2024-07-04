@@ -20,6 +20,12 @@ type Repo struct {
 	Cache cache.Cache
 }
 
+func New(cache cache.Cache) *Repo {
+	return &Repo{
+		Cache: cache,
+	}
+}
+
 // GetCache 获取 cache
 func (r *Repo) GetCache() cache.Cache {
 	return r.Cache
@@ -28,26 +34,12 @@ func (r *Repo) GetCache() cache.Cache {
 // QueryCache 查询启用缓存
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
-func (r *Repo) QueryCache(ctx context.Context, key string, data any, ttl time.Duration, query func(any) error) (err error) {
+func (r *Repo) QueryCache(ctx context.Context, key string, data any, ttl time.Duration, query func() (any, error)) (err error) {
 	// 从cache获取
 	err = r.Cache.Get(ctx, key, data)
 	if errors.Is(err, cache.ErrPlaceholder) {
 		// 空数据也需要返回空的数据结构，保持与gorm返回一直的结构 see gorm.first()
-		reflectValue := reflect.ValueOf(data)
-		for reflectValue.Kind() == reflect.Ptr {
-			if reflectValue.IsNil() && reflectValue.CanAddr() {
-				reflectValue.Set(reflect.New(reflectValue.Type().Elem()))
-			}
-
-			reflectValue = reflectValue.Elem()
-		}
-		switch reflectValue.Kind() {
-		case reflect.Slice, reflect.Array:
-			if reflectValue.Len() == 0 && reflectValue.Cap() == 0 {
-				// if the slice cap is externally initialized, the externally initialized slice is directly used here
-				reflectValue.Set(reflect.MakeSlice(reflectValue.Type(), 0, 20))
-			}
-		}
+		r.SetEmptyData(data)
 		logger.Debugf("[repo] key %v is empty", key)
 		return nil
 	} else if err != nil && err != redis.Nil {
@@ -66,22 +58,23 @@ func (r *Repo) QueryCache(ctx context.Context, key string, data any, ttl time.Du
 	// https://juejin.cn/post/6844904084445593613
 	_, err, _ = g.Do(key, func() (any, error) {
 		// 从数据库中获取
-		err = query(data)
+		dbData, err := query()
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, gorm.ErrEmptySlice) {
 			if err = r.Cache.SetCacheWithNotFound(ctx, key); err != nil {
 				logger.Warnf("[repo] SetCacheWithNotFound err, key: %s", key)
 			}
+			r.SetEmptyData(data)
 			return data, nil
 		} else if err != nil {
 			return nil, errors.Wrapf(err, "[repo] query db")
 		}
 
 		// set cache
-		if err = r.Cache.Set(ctx, key, data, ttl); err != nil {
+		if err = r.Cache.Set(ctx, key, dbData, ttl); err != nil {
 			return nil, errors.Wrapf(err, "[repo] set data to cache key: %s", key)
 		}
-		return data, nil
+		return dbData, nil
 	})
 	if err != nil {
 		return errors.Wrapf(err, "[repo] get err via single flight do key: %s", key)
@@ -94,5 +87,25 @@ func (r *Repo) QueryCache(ctx context.Context, key string, data any, ttl time.Du
 func (r *Repo) DelCache(ctx context.Context, key string) {
 	if err := r.Cache.Del(ctx, key); err != nil {
 		logger.Warnf("[repo] del cache key: %v", key)
+	}
+}
+
+// SetEmptyData 设置空数据
+func (r *Repo) SetEmptyData(data any) {
+	// 空数据也需要返回空的数据结构，保持与gorm返回一直的结构 see gorm.first()
+	reflectValue := reflect.ValueOf(data)
+	for reflectValue.Kind() == reflect.Ptr {
+		if reflectValue.IsNil() && reflectValue.CanAddr() {
+			reflectValue.Set(reflect.New(reflectValue.Type().Elem()))
+		}
+
+		reflectValue = reflectValue.Elem()
+	}
+	switch reflectValue.Kind() {
+	case reflect.Slice, reflect.Array:
+		if reflectValue.Len() == 0 && reflectValue.Cap() == 0 {
+			// if the slice cap is externally initialized, the externally initialized slice is directly used here
+			reflectValue.Set(reflect.MakeSlice(reflectValue.Type(), 0, 20))
+		}
 	}
 }
